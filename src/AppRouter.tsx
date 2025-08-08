@@ -1,0 +1,34 @@
+import { Routes, Route } from "react-router-dom";
+import { useAuth } from "./auth/useAuth";
+import LandingPage from "./Pages/LandingPage";
+import HomePage from "./Pages/HomePage";
+import ProtectedRoute from "./auth/ProtectedRoute";
+
+export default function AppRouter() {
+  const { loading } = useAuth();
+
+  if (loading) {
+    // Full-screen loader so nothing else flashes
+    return (
+      <div className="min-h-dvh grid place-items-center">
+        <div className="text-zinc-600">Loading…</div>
+      </div>
+    );
+  }
+
+  return (
+    <Routes>
+      {/* route for landing page */}
+      <Route path="/" element={<LandingPage />} />
+      {/* protected route for user's home page */}
+      <Route
+        path="/app"
+        element={
+          <ProtectedRoute>
+            <HomePage />
+          </ProtectedRoute>
+        }
+      />
+    </Routes>
+  );
+}
