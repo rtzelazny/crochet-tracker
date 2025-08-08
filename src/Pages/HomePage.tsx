@@ -15,6 +15,9 @@ function HomePage() {
   return (
     <div>
       <h1> Home Page</h1>
+      <div>
+        <span className="text-sm text-zinc-600">{session?.user?.email}</span>
+      </div>{" "}
       <button onClick={logOut}> Log out </button>
     </div>
   );
