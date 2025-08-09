@@ -1,7 +1,7 @@
 import { Routes, Route } from "react-router-dom";
 import { useAuth } from "./auth/useAuth";
 import LandingPage from "./Pages/LandingPage";
-import HomePage from "./Pages/HomePage";
+import WorkSpace from "./Pages/Workspace";
 import ProtectedRoute from "./auth/ProtectedRoute";
 
 export default function AppRouter() {
@@ -25,7 +25,7 @@ export default function AppRouter() {
         path="/app"
         element={
           <ProtectedRoute>
-            <HomePage />
+            <WorkSpace />
           </ProtectedRoute>
         }
       />
