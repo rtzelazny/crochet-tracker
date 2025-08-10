@@ -12,8 +12,8 @@ function SideBar() {
         -{" "}
       </button>
 
-      <div className="flex items-center">
-        <h1 className="text-xl p-5"> My Patterns </h1>
+      <div className="flex items-center gap-5">
+        <h1 className="text-xl pl-5"> My Patterns </h1>
         {/* Add pattern button */}
         <button
           onClick={() => setOpen(true)}
