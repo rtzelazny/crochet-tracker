@@ -3,6 +3,10 @@ import { supabase } from "../lib/supabase";
 import ThemeToggle from "../components/ThemeToggle";
 import SideBar from "../components/SideBar";
 import { useState } from "react";
+import StitchTrackerPanel from "../components/StitchTrackerPanel";
+import PatternViewer from "../components/PatternViewer";
+import PatternEditor from "../components/PatternEditor";
+import { SIDEBAR_WIDTH } from "../constants";
 
 type Mode = "view" | "edit";
 
@@ -14,29 +18,42 @@ function Workspace() {
     nav("/");
   };
   const [mode, setMode] = useState<Mode>("view");
+  const [trackerOpen, setTrackerOpen] = useState(true);
+  const [trackerWidth, setTrackerWidth] = useState(320);
 
   return (
-    <div className="min-h-dvh bg-white dark:bg-gray-800 dark:text-white">
+    <div className="h-dvh overflow-hidden">
       <h2 className="pt-3 pb-2 pl-3 font-bold"> StitchMate []</h2>
-      <div className="grid grid-cols-[280px_1fr]">
-        <div>
+      {/* Grid for [sidebar][pattern view/edit][stitch tracker]*/}
+      <div
+        className="grid"
+        style={{
+          gridTemplateColumns: `${SIDEBAR_WIDTH}px 1fr auto`,
+        }}
+      >
+        {/* Sidebar column */}
+        <aside className="h-dvh overflow-y-auto">
           <SideBar />
-        </div>
-        {/* main area */}
+        </aside>
+
+        {/* Pattern view/edit column */}
         <div>
-          <header className="flex items-center pt-10 pl-10 dark:border-zinc-800 space-x-5">
-            <div className="min-w-0">
-              <h2 className="truncate text-lg font-semibold">{"(Untitled)"}</h2>
-              <p className="truncate text-xs text-zinc-500">
-                {/* add last updated time */}
-              </p>
-            </div>
+          <section className="h-dvh min-w-0 items-center pt-10 pl-10 dark:border-zinc-800 overflow-auto">
+            <header className="sticky top-0 flex truncate text-lg font-semibold justify-between">
+              
+              <div className="min-w-0 flex flex-col">
+                {"(Untitled)"}
+                <p className="truncate text-xs text-zinc-500">
+                  {/* add last updated time */} Last Updated
+                </p>
+              </div>
+            
 
             {/* Mode toggle */}
             <div
               role="tablist"
               aria-label="Mode"
-              className="w-20 h-6 inline-flex rounded-lg border text-sm dark:border-zinc-700"
+              className="w-20 h-6 inline-flex rounded-lg border text-sm dark:border-zinc-700 mt-10"
             >
               <button
                 role="tab"
@@ -61,21 +78,32 @@ function Workspace() {
                 }`}
               >
                 Edit
-              </button>
-            </div>
-          </header>
+              </button></div>
+              </header>
+
+              <div>{mode === "view" && <PatternViewer />}</div>
+              <div>{mode === "edit" && <PatternEditor />}</div>
+            
+          </section>
         </div>
-        {/* top bar */}
-        <button
-          onClick={logOut}
-          className="absolute top-2 right-4 hover:text-gray-600 dark:hover:text-gray-400"
-        >
-          {" "}
-          Log out{" "}
-        </button>
-        <div className="absolute top-10 right-4">
-          <ThemeToggle />
-        </div>
+        {/* Stitch Tracker column */}
+
+        {mode === "view" && (
+          <StitchTrackerPanel width={trackerWidth} setWidth={setTrackerWidth} />
+        )}
+
+        {/* Everything else */}
+      </div>
+      {/* top bar */}
+      <button
+        onClick={logOut}
+        className="fixed top-2 right-4 hover:text-gray-600 dark:hover:text-gray-400"
+      >
+        {" "}
+        Log out{" "}
+      </button>
+      <div className="fixed top-10 right-4">
+        <ThemeToggle />
       </div>
     </div>
   );
