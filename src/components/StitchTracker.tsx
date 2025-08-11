@@ -1,7 +1,7 @@
 function StitchTracker() {
   return (
     <div
-      className="bg-gray-200 dark:bg-gray-700 p-4 overflow-auto rounded-lg absolute bottom-10"
+      className="bg-gray-200 dark:bg-gray-700 p-4 overflow-auto rounded-lg fixed bottom-2 right-2"
     >
       <div className="flex flex-col items-center gap-3">
         <div className="text-xs text-zinc-500 min-h-4"> Before stitch </div>

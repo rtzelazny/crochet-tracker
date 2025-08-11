@@ -51,7 +51,7 @@ function PatternViewer() {
         each st around with 3 hdc in each corner, join with sl st to first st.{" "}
       </p>
       <p>Row 3: Ch 3 (counts as dc throughout), dc in each st across, turn. </p>
-
+      <p className="font-bold"> FINISHED </p>
     </div>
   );
 }

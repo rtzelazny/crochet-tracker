@@ -22,7 +22,7 @@ function Workspace() {
   const [trackerWidth, setTrackerWidth] = useState(320);
 
   return (
-    <div className="h-dvh overflow-hidden">
+    <div className="h-dvh overflow-hidden bg-white dark:bg-gray-800">
       <h2 className="pt-3 pb-2 pl-3 font-bold"> StitchMate []</h2>
       {/* Grid for [sidebar][pattern view/edit][stitch tracker]*/}
       <div
@@ -38,8 +38,8 @@ function Workspace() {
 
         {/* Pattern view/edit column */}
         <div>
-          <section className="h-dvh min-w-0 items-center pt-10 pl-10 dark:border-zinc-800 overflow-auto">
-            <header className="sticky top-0 flex truncate text-lg font-semibold justify-between">
+          <section className="h-dvh min-w-0 items-center mt-10 ml-10 dark:border-zinc-800 overflow-y-auto">
+            <header className="sticky top-0 flex truncate text-lg font-semibold justify-between z-10 bg-white dark:bg-gray-800">
               
               <div className="min-w-0 flex flex-col">
                 {"(Untitled)"}
@@ -53,7 +53,7 @@ function Workspace() {
             <div
               role="tablist"
               aria-label="Mode"
-              className="w-20 h-6 inline-flex rounded-lg border text-sm dark:border-zinc-700 mt-10"
+              className="w-20 h-6 inline-flex rounded-lg border text-sm dark:border-zinc-700 mt-10 mb-2"
             >
               <button
                 role="tab"
