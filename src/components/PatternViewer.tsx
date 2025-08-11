@@ -1,6 +1,6 @@
 function PatternViewer() {
   return (
-    <div className="m-5">
+    <div className="p-10">
       <p> BLANKET With A, ch 168. </p>
       <p>Row 1: Dc in 4th ch from hk and in each ch across, turn – 196 dc. </p>
       <p>

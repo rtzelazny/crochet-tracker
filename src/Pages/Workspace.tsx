@@ -22,7 +22,7 @@ function Workspace() {
   const [trackerWidth, setTrackerWidth] = useState(320);
 
   return (
-    <div className="h-dvh overflow-hidden bg-white dark:bg-gray-800">
+    <div className="h-dvh overflow-hidden bg-white dark:bg-gray-800 dark:text-white">
       <h2 className="pt-3 pb-2 pl-3 font-bold"> StitchMate []</h2>
       {/* Grid for [sidebar][pattern view/edit][stitch tracker]*/}
       <div
@@ -38,52 +38,52 @@ function Workspace() {
 
         {/* Pattern view/edit column */}
         <div>
-          <section className="h-dvh min-w-0 items-center mt-10 ml-10 dark:border-zinc-800 overflow-y-auto">
-            <header className="sticky top-0 flex truncate text-lg font-semibold justify-between z-10 bg-white dark:bg-gray-800">
-              
+          <section className="h-dvh min-w-0 dark:border-zinc-800 overflow-y-auto mt-10">
+            <header className="sticky top-0 px-10 py-2 flex truncate text-lg font-semibold justify-between shadow-md z-10 bg-white dark:bg-gray-800">
               <div className="min-w-0 flex flex-col">
                 {"(Untitled)"}
                 <p className="truncate text-xs text-zinc-500">
                   {/* add last updated time */} Last Updated
                 </p>
               </div>
-            
 
-            {/* Mode toggle */}
-            <div
-              role="tablist"
-              aria-label="Mode"
-              className="w-20 h-6 inline-flex rounded-lg border text-sm dark:border-zinc-700 mt-10 mb-2"
-            >
-              <button
-                role="tab"
-                aria-selected={mode === "view"}
-                onClick={() => setMode("view")}
-                className={`w-10 h-5.5 rounded-bl-md rounded-tl-md ${
-                  mode === "view"
-                    ? "bg-gray-200 dark:bg-gray-600 font-semibold"
-                    : "hover:gray-zinc-100 dark:hover:bg-gray-700"
-                }`}
+              {/* Mode toggle */}
+              <div
+                role="tablist"
+                aria-label="Mode"
+                className="w-20 h-6 inline-flex rounded-lg border text-sm dark:border-zinc-700"
               >
-                View
-              </button>
-              <button
-                role="tab"
-                aria-selected={mode === "edit"}
-                onClick={() => setMode("edit")}
-                className={`w-10 h-5.5 rounded-br-md rounded-tr-md ${
-                  mode === "edit"
-                    ? "bg-gray-200 dark:bg-gray-600 font-semibold"
-                    : "hover:bg-gray-100 dark:hover:bg-gray-700"
-                }`}
-              >
-                Edit
-              </button></div>
-              </header>
-
+                <button
+                  role="tab"
+                  aria-selected={mode === "view"}
+                  onClick={() => setMode("view")}
+                  className={`w-10 h-5.5 rounded-bl-md rounded-tl-md ${
+                    mode === "view"
+                      ? "bg-gray-200 dark:bg-gray-600 font-semibold"
+                      : "hover:gray-zinc-100 dark:hover:bg-gray-700"
+                  }`}
+                >
+                  View
+                </button>
+                <button
+                  role="tab"
+                  aria-selected={mode === "edit"}
+                  onClick={() => setMode("edit")}
+                  className={`w-10 h-5.5 rounded-br-md rounded-tr-md ${
+                    mode === "edit"
+                      ? "bg-gray-200 dark:bg-gray-600 font-semibold"
+                      : "hover:bg-gray-100 dark:hover:bg-gray-700"
+                  }`}
+                >
+                  Edit
+                </button>
+              </div>
+            </header>
+            <div className="min-h-0 flex-1 overflow-y-auto">
               <div>{mode === "view" && <PatternViewer />}</div>
               <div>{mode === "edit" && <PatternEditor />}</div>
-            
+              <div className="pb-20" />
+            </div>
           </section>
         </div>
         {/* Stitch Tracker column */}
