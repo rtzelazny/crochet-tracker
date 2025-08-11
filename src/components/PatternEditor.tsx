@@ -1,7 +1,11 @@
+import NumericTextbox from "./NumericTextbox";
+import AddStitch from "./AddStitch";
+import { useState } from "react";
+
 function PatternEditor() {
   return (
-    <div className="m-5">
-      <p> Editor </p>
+    <div className="h-dvh m-5">
+      <AddStitch />
     </div>
   );
 }
