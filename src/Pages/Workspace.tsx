@@ -38,8 +38,10 @@ function Workspace() {
 
         {/* Pattern view/edit column */}
         <div>
-          <section className="h-dvh min-w-0 dark:border-zinc-800 overflow-y-auto mt-10">
-            <header className="sticky top-0 px-10 py-2 flex truncate text-lg font-semibold justify-between shadow-md z-10 bg-white dark:bg-gray-800">
+          <section className={`h-dvh min-w-0 dark:border-zinc-800 mt-10 ${
+    mode === "view" ? "overflow-y-auto" : "overflow-hidden"
+  }`}>
+            <header className="sticky top-0 px-10 py-2 flex truncate text-lg font-semibold justify-between shadow-md z-10 bg-white dark:bg-gray-800 z-10">
               <div className="min-w-0 flex flex-col">
                 {"(Untitled)"}
                 <p className="truncate text-xs text-zinc-500">
