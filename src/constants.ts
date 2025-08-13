@@ -23,6 +23,7 @@ export const STITCHES = [
 
 // supported stitch placements
 export const PLACEMENTS = [
+  "none",
   "custom",
   // Basic stitch targets
   "next st",
