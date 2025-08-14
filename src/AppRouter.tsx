@@ -18,11 +18,20 @@ export default function AppRouter() {
 
   return (
     <Routes>
-      {/* route for landing page */}
+      {/* route for landing page (public) */}
       <Route path="/" element={<LandingPage />} />
-      {/* protected route for user's home page */}
+      {/* protected route for user's home page (Auth only!)*/}
       <Route
         path="/app"
+        element={
+          <ProtectedRoute>
+            <WorkSpace />
+          </ProtectedRoute>
+        }
+      />
+      {/* Pattern route by id num */}
+      <Route
+        path="/app/p/:id"
         element={
           <ProtectedRoute>
             <WorkSpace />

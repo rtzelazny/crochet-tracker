@@ -1,9 +1,18 @@
 import AddPatternModal from "../components/AddPatternModal";
 import { useState } from "react";
 import { SIDEBAR_WIDTH } from "../constants";
+import { useAuth } from "../auth/useAuth";
+import { useMyPatterns, useCreatePattern } from "../data/patternHooks"
+import { useNavigate, useParams } from "react-router-dom";
 
 function SideBar() {
   const [open, setOpen] = useState(false);
+  const { session } = useAuth();
+  const nav = useNavigate();
+  const { data, isLoading, error } = useMyPatterns(session);
+  const params = useParams<{ id: string }>();
+  const currentId = params.id;
+
   return (
     <aside
       className="h-dvh bg-gray-200 dark:bg-gray-900 rounded-xl"
@@ -27,8 +36,27 @@ function SideBar() {
           +{" "}
         </button>
       </div>
+      
       {open && <AddPatternModal onClose={() => setOpen(false)} />}
+
       {/* List of user's patterns */}
+      <ul className="space-y-1">
+        {data?.map((p) => (
+          <li key={p.id}>
+            <button
+              onClick={() => nav(`/app/p/${p.id}`)}
+              className={`w-full truncate rounded px-2 py-1 text-left text-sm ${
+                currentId === p.id
+                  ? "bg-zinc-300 dark:bg-zinc-700"
+                  : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
+              }`}
+              title={p.title}
+            >
+              {p.title || "(Untitled)"}
+            </button>
+          </li>
+        ))}
+      </ul>
     </aside>
   );
 }

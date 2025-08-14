@@ -2,11 +2,14 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import ThemeToggle from "../components/ThemeToggle";
 import SideBar from "../components/SideBar";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import StitchTrackerPanel from "../components/StitchTrackerPanel";
 import PatternViewer from "../components/PatternViewer";
 import PatternEditor from "../components/PatternEditor";
 import { SIDEBAR_WIDTH } from "../constants";
+import { useParams } from "react-router-dom";
+import { usePattern, useUpdatePattern } from "../data/patternHooks";
+import type { PatternContent } from "../types/patternContent";
 
 type Mode = "view" | "edit";
 
@@ -20,6 +23,20 @@ function Workspace() {
   const [mode, setMode] = useState<Mode>("view");
   const [trackerOpen, setTrackerOpen] = useState(true);
   const [trackerWidth, setTrackerWidth] = useState(320);
+  const { id } = useParams<{ id: string }>();
+  const { data: pattern, isLoading } = usePattern(id);
+  const update = useUpdatePattern();
+
+  const content: PatternContent = useMemo(
+    () => pattern?.content ?? { version: 1, rows: [] },
+    [pattern]
+  );
+
+  // debounced saver for editor
+  const saveContent = debounce((next: PatternContent) => {
+    if (!id) return;
+    update.mutate({ id, patch: { content: next } });
+  }, 500);
 
   return (
     <div className="h-dvh overflow-hidden bg-white dark:bg-gray-800 dark:text-white">
@@ -38,14 +55,18 @@ function Workspace() {
 
         {/* Pattern view/edit column */}
         <div>
-          <section className={`h-dvh min-w-0 dark:border-zinc-800 mt-10 ${
-    mode === "view" ? "overflow-y-auto" : "overflow-hidden"
-  }`}>
+          <section
+            className={`h-dvh min-w-0 dark:border-zinc-800 mt-10 ${
+              mode === "view" ? "overflow-y-auto" : "overflow-hidden"
+            }`}
+          >
             <header className="sticky top-0 px-10 py-2 flex truncate text-lg font-semibold justify-between shadow-md z-10 bg-white dark:bg-gray-800 z-10">
-              <div className="min-w-0 flex flex-col">
-                {"(Untitled)"}
+              <div className="min-w-0">
+                <h2 className="truncate text-lg font-semibold">
+                  {pattern?.title ?? "(Untitled)"}
+                </h2>
                 <p className="truncate text-xs text-zinc-500">
-                  {/* add last updated time */} Last Updated
+                  {isLoading ? "Loading…" : ""}
                 </p>
               </div>
 
@@ -82,8 +103,16 @@ function Workspace() {
               </div>
             </header>
             <div className="min-h-0 flex-1 overflow-y-auto">
-              <div>{mode === "view" && <PatternViewer />}</div>
-              <div>{mode === "edit" && <PatternEditor />}</div>
+              <div>
+                {mode === "view" && <PatternViewer content={content} />}
+              </div>
+              <div>{mode === "edit" && <PatternEditor content={content}
+              onChange={(next) => {
+                // optimistic UI: you can also update local cache here if desired
+                saveContent(next);
+              }}
+              onTitleChange={(title) => id && update.mutate({ id, patch: { title } })}
+              onDescriptionChange={(description) => id && update.mutate({ id, patch: { description } })}/>}</div>
               <div className="pb-20" />
             </div>
           </section>
@@ -112,3 +141,12 @@ function Workspace() {
 }
 
 export default Workspace;
+
+function debounce<T extends (...args: any[]) => void>(fn: T, ms: number) {
+  let t: number | undefined;
+  return (...args: Parameters<T>) => {
+    window.clearTimeout(t);
+    // @ts-ignore
+    t = window.setTimeout(() => fn(...args), ms);
+  };
+}

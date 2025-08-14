@@ -1,4 +1,4 @@
-import type { NoteRow as NoteRowType } from "../types/patternRows";
+import type { NoteRow as NoteRowType } from "../types/patternContent";
 
 type Props = {
   row: NoteRowType;

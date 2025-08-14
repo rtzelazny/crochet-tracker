@@ -1,4 +1,15 @@
+import { useMyPatterns, useCreatePattern } from "../data/patternHooks";
+import { useNavigate, useParams } from "react-router-dom";
+import { useAuth } from "../auth/useAuth";
+import { useState } from "react";
+
 function AddPatternModal({ onClose }: { onClose: () => void }) {
+  const { session } = useAuth();
+  const nav = useNavigate();
+  const create = useCreatePattern();
+  const params = useParams<{ id: string }>();
+  const currentId = params.id;
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
       {/* Modal content */}
@@ -7,7 +18,13 @@ function AddPatternModal({ onClose }: { onClose: () => void }) {
 
         {/* button grid */}
         <div className="mt-4 grid grid-cols-2 gap-x-5 gap-y-1">
-          <button className="rounded-md bg-indigo-200 px-4 py-2 hover:bg-indigo-300 dark:bg-indigo-700 dark:hover:bg-indigo-600">
+          <button
+            onClick={async () => {
+              const res = await create.mutateAsync({});
+              nav(`/app/p/${res.id}`); // go to new pattern
+            }}
+            className="rounded-md bg-indigo-200 px-4 py-2 hover:bg-indigo-300 dark:bg-indigo-700 dark:hover:bg-indigo-600"
+          >
             Create new pattern
           </button>
 

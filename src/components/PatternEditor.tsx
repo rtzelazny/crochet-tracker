@@ -4,47 +4,49 @@ import SectionRow from "./SectionRow";
 import NoteRow from "./NoteRow";
 import InsertButtonsBar from "./InsertButtonsBar";
 import SelectButtonsBar from "./SelectButtonsBar";
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 
-import type { PatternRow } from "../types/patternRows";
+import type { PatternContent, PatternRow } from "../types/patternContent";
 
-function PatternEditor() {
+function PatternEditor({
+  content,
+  onChange,
+  onTitleChange,
+  onDescriptionChange,
+}: {
+  content: PatternContent;
+  onChange: (next: PatternContent) => void;
+  onTitleChange?: (title: string) => void;
+  onDescriptionChange?: (desc: string) => void;
+}) {
   // list for rows
-  const [rows, setRows] = useState<PatternRow[]>([]);
+  const [rows, setRows] = useState<PatternRow[]>(content.rows);
+
+  useEffect(() => {
+    setRows(content.rows); // sync if server changes
+  }, [content.rows]);
+
+  const commit = (nextRows: PatternRow[]) => {
+    setRows(nextRows);
+    onChange({ version: 1, rows: nextRows });
+  };
 
   const addStitch = () =>
-    setRows((prev) => [
-      ...prev,
-      {
-        id: crypto.randomUUID(),
-        type: "stitch",
-        qty: "",
-        stitch: "",
-        placement: "",
-      },
-    ]);
+    commit([...rows, { id: crypto.randomUUID(), type: "stitch", qty: "", stitch: "", placement: "" }]);
 
   const addSection = () =>
-    setRows((prev) => [
-      ...prev,
-      { id: crypto.randomUUID(), type: "section", title: "", repeat: "" },
-    ]);
+    commit([...rows, { id: crypto.randomUUID(), type: "section", title: ""}]);
 
   const addNote = () =>
-    setRows((prev) => [
-      ...prev,
-      { id: crypto.randomUUID(), type: "note", text: "" },
-    ]);
+    commit([...rows, { id: crypto.randomUUID(), type: "note", text: "" }]);
 
-  const removeRow = (id: string) =>
-    setRows((prev) => prev.filter((r) => r.id !== id));
+  const removeRow = (id: string) => commit(rows.filter(r => r.id !== id));
 
-  const updateRow = (id: string, next: PatternRow) =>
-    setRows((prev) => prev.map((r) => (r.id === id ? next : r)));
+  const updateRow = (id: string, next: PatternRow) => commit(rows.map(r => r.id === id ? next : r));
 
   return (
     <div className="h-dvh overflow-y-auto">
-      <div className="sticky top-0 flex inline-flex gap-5 rounded-lg bg-gray-200 w-full p-5 z-8">
+      <div className="sticky top-0 flex inline-flex gap-5 rounded-lg bg-gray-200 w-full p-5 z-10">
         <InsertButtonsBar
           onAddStitch={addStitch}
           onAddSection={addSection}
@@ -61,31 +63,19 @@ function PatternEditor() {
             case "stitch":
               return (
                 <div key={row.id} className={marginTop}>
-                  <StitchRow
-                    row={row}
-                    onChange={(next) => updateRow(row.id, next)}
-                    onRemove={() => removeRow(row.id)}
-                  />
+                  <StitchRow key={row.id} row={row} onChange={(n) => updateRow(row.id, n)} onRemove={() => removeRow(row.id)} />
                 </div>
               );
             case "section":
               return (
                 <div key={row.id} className={marginTop}>
-                  <SectionRow
-                    row={row}
-                    onChange={(next) => updateRow(row.id, next)}
-                    onRemove={() => removeRow(row.id)}
-                  />
+                  <SectionRow key={row.id} row={row} onChange={(n) => updateRow(row.id, n)} onRemove={() => removeRow(row.id)} />
                 </div>
               );
             case "note":
               return (
                 <div key={row.id} className={marginTop}>
-                  <NoteRow
-                    row={row}
-                    onChange={(next) => updateRow(row.id, next)}
-                    onRemove={() => removeRow(row.id)}
-                  />
+                  <NoteRow key={row.id} row={row} onChange={(n) => updateRow(row.id, n)} onRemove={() => removeRow(row.id)} />
                 </div>
               );
             default:

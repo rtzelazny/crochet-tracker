@@ -1,8 +1,7 @@
 import NumericTextbox from "./NumericTextbox";
 import TypePickBox from "./TypePickBox";
-import { useState, useEffect, useRef } from "react";
 import { PLACEMENTS, STITCHES } from "../constants";
-import type { StitchRow as StitchRowType } from "../types/patternRows";
+import type { StitchRow as StitchRowType } from "../types/patternContent";
 
 type Props = {
   row: StitchRowType;
@@ -11,11 +10,6 @@ type Props = {
 };
 
 function AddStitch({ row, onChange, onRemove }: Props) {
-  const [stitchQty, setStitchQty] = useState("");
-  const [stitch, setStitch] = useState(""); // must be one of STITCHES or ""
-  const [placement, setPlacement] = useState("");
-  const firstInputRef = useRef<HTMLInputElement | null>(null);
-
   return (
     <div className="">
       <div className="flex grid-cols-4 grid-rows-2 text-sm gap-2 pt-5 px-10">
@@ -37,8 +31,8 @@ function AddStitch({ row, onChange, onRemove }: Props) {
         <span className="text-sm text-zinc-600 dark:text-zinc-300">in</span>
         <TypePickBox
           options={PLACEMENTS}
-          value={placement}
-          onChange={setPlacement}
+          value={row.placement}
+          onChange={(v) => onChange({ ...row, placement: v })}
           placeholder="Placement…"
           wrapperClassName="w-40"
           inputClassName="h-6 border border-zinc-300"

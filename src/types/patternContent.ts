@@ -21,3 +21,8 @@ export type NoteRow = {
 };
 
 export type PatternRow = StitchRow | SectionRow | NoteRow;
+
+export type PatternContent = {
+  rows: PatternRow[];
+  version: 1;
+};

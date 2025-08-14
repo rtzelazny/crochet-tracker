@@ -1,4 +1,4 @@
-import type { SectionRow as SectionRowType } from "../types/patternRows";
+import type { SectionRow as SectionRowType } from "../types/patternContent";
 
 type Props = {
   row: SectionRowType;
