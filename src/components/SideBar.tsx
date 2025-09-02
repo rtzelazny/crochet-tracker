@@ -40,6 +40,7 @@ function SideBar() {
       {open && <AddPatternModal onClose={() => setOpen(false)} />}
 
       {/* List of user's patterns */}
+      <div className="mt-5">
       <ul className="space-y-1">
         {data?.map((p) => (
           <li key={p.id}>
@@ -57,6 +58,7 @@ function SideBar() {
           </li>
         ))}
       </ul>
+      </div>
     </aside>
   );
 }

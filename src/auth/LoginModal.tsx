@@ -11,11 +11,11 @@ function LoginModal({ onClose }: { onClose: () => void }) {
 
   return (
     <div>
-      <h2> Sign in</h2>
-      <button onClick={onClose} aria-label="Close" className="p-2">
+      {/* <h2> Sign in</h2>
+       <button onClick={onClose} aria-label="Close" className="p-2">
         Close
-      </button>
-      <button onClick = {signInGoogle}> Continue with Google </button>
+      </button> */}
+      <button className="hover:text-gray-600" onClick={signInGoogle}> Continue with Google </button>
     </div>
   );
 }

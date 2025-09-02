@@ -2,6 +2,7 @@ import NumericTextbox from "./NumericTextbox";
 import TypePickBox from "./TypePickBox";
 import { PLACEMENTS, STITCHES } from "../constants";
 import type { StitchRow as StitchRowType } from "../types/patternContent";
+import { useEffect } from "react";
 
 type Props = {
   row: StitchRowType;
@@ -10,6 +11,9 @@ type Props = {
 };
 
 function AddStitch({ row, onChange, onRemove }: Props) {
+  useEffect(() => {
+  console.log('[StitchRow] props row changed', row);
+}, [row]);
   return (
     <div className="">
       <div className="flex grid-cols-4 grid-rows-2 text-sm gap-2 pt-5 px-10">
@@ -18,7 +22,7 @@ function AddStitch({ row, onChange, onRemove }: Props) {
           onChange={(v) => onChange({ ...row, qty: v })}
           min={1}
           max={999}
-          className="border border-zinc-300 rounded w-8.5 h-6 text-center bg-white"
+          className="border border-zinc-300 rounded w-9 h-6 text-center bg-white"
         />
         <TypePickBox
           options={STITCHES}

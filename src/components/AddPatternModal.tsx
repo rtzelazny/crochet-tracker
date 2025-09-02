@@ -48,7 +48,7 @@ function AddPatternModal({ onClose }: { onClose: () => void }) {
             aria-label="Close"
             className="flex items-center justify-center h-5 w-18 text-gray-600 bg-gray-200 dark:bg-gray-700 dark:text-gray-300 hover:font-bold dark:hover:text-gray-200 rounded-lg hover:border-1 dark:hover:border-1"
           >
-            cancel
+            close
           </button>
         </div>
       </div>

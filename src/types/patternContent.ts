@@ -24,5 +24,5 @@ export type PatternRow = StitchRow | SectionRow | NoteRow;
 
 export type PatternContent = {
   rows: PatternRow[];
-  version: 1;
+  version: number;
 };

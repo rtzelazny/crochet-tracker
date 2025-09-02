@@ -2,7 +2,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabase";
 import ThemeToggle from "../components/ThemeToggle";
 import SideBar from "../components/SideBar";
-import { useState, useMemo } from "react";
+import { useMemo, useState, useEffect } from "react";
 import StitchTrackerPanel from "../components/StitchTrackerPanel";
 import PatternViewer from "../components/PatternViewer";
 import PatternEditor from "../components/PatternEditor";
@@ -15,33 +15,42 @@ type Mode = "view" | "edit";
 
 function Workspace() {
   const nav = useNavigate();
-  /* signs user out through supabase. Directs back to the landing page*/
   const logOut = async () => {
     await supabase.auth.signOut();
     nav("/");
   };
+
   const [mode, setMode] = useState<Mode>("view");
-  const [trackerOpen, setTrackerOpen] = useState(true);
   const [trackerWidth, setTrackerWidth] = useState(320);
+
   const { id } = useParams<{ id: string }>();
   const { data: pattern, isLoading } = usePattern(id);
   const update = useUpdatePattern();
 
-  const content: PatternContent = useMemo(
-    () => pattern?.content ?? { version: 1, rows: [] },
-    [pattern]
-  );
+  /* ===== NEW: local draft is the source of truth while editing ===== */
+  const [draft, setDraft] = useState<PatternContent>({ version: 1, rows: [] });
 
-  // debounced saver for editor
-  const saveContent = debounce((next: PatternContent) => {
-    if (!id) return;
-    update.mutate({ id, patch: { content: next } });
-  }, 500);
+  // Reinitialize draft ONLY when switching to a different pattern id
+  useEffect(() => {
+    if (!pattern?.id) return;
+    setDraft(pattern.content ?? { version: 1, rows: [] });
+  }, [pattern?.id]);
+
+  // Debounced saver for editor
+  const saveContent = useMemo(
+  () =>
+    debounce((next: PatternContent) => {
+      if (!id) return;
+      update.mutate({ id, patch: { content: next } });
+    }, 500),
+  [id, update]
+);
 
   return (
     <div className="h-dvh overflow-hidden bg-white dark:bg-gray-800 dark:text-white">
       <h2 className="pt-3 pb-2 pl-3 font-bold"> StitchMate []</h2>
-      {/* Grid for [sidebar][pattern view/edit][stitch tracker]*/}
+
+      {/* Grid for [sidebar][pattern view/edit][stitch tracker] */}
       <div
         className="grid"
         style={{
@@ -60,7 +69,7 @@ function Workspace() {
               mode === "view" ? "overflow-y-auto" : "overflow-hidden"
             }`}
           >
-            <header className="sticky top-0 px-10 py-2 flex truncate text-lg font-semibold justify-between shadow-md z-10 bg-white dark:bg-gray-800 z-10">
+            <header className="sticky top-0 px-10 py-2 flex truncate text-lg font-semibold justify-between shadow-md z-10 bg-white dark:bg-gray-800">
               <div className="min-w-0">
                 <h2 className="truncate text-lg font-semibold">
                   {pattern?.title ?? "(Untitled)"}
@@ -102,36 +111,49 @@ function Workspace() {
                 </button>
               </div>
             </header>
+
             <div className="min-h-0 flex-1 overflow-y-auto">
               <div>
-                {mode === "view" && <PatternViewer content={content} />}
+                {/* Use draft for view mode */}
+                {mode === "view" && <PatternViewer content={draft} />}
               </div>
-              <div>{mode === "edit" && <PatternEditor content={content}
-              onChange={(next) => {
-                // optimistic UI: you can also update local cache here if desired
-                saveContent(next);
-              }}
-              onTitleChange={(title) => id && update.mutate({ id, patch: { title } })}
-              onDescriptionChange={(description) => id && update.mutate({ id, patch: { description } })}/>}</div>
+
+              <div>
+                {/* Editor is fully controlled by draft */}
+                {mode === "edit" && (
+                  <PatternEditor
+                    content={draft}
+                    onChange={(next) => {
+                      setDraft(next); // immediate local update (no snap-back hopefully)
+                      saveContent(next); // debounce save to Supabase
+                    }}
+                    onTitleChange={(title) =>
+                      id && update.mutate({ id, patch: { title } })
+                    }
+                    onDescriptionChange={(description) =>
+                      id && update.mutate({ id, patch: { description } })
+                    }
+                  />
+                )}
+              </div>
+
               <div className="pb-20" />
             </div>
           </section>
         </div>
-        {/* Stitch Tracker column */}
 
+        {/* Stitch Tracker column */}
         {mode === "view" && (
           <StitchTrackerPanel width={trackerWidth} setWidth={setTrackerWidth} />
         )}
-
-        {/* Everything else */}
       </div>
+
       {/* top bar */}
       <button
         onClick={logOut}
         className="fixed top-2 right-4 hover:text-gray-600 dark:hover:text-gray-400"
       >
-        {" "}
-        Log out{" "}
+        Log out
       </button>
       <div className="fixed top-10 right-4">
         <ThemeToggle />
@@ -142,6 +164,7 @@ function Workspace() {
 
 export default Workspace;
 
+/* util */
 function debounce<T extends (...args: any[]) => void>(fn: T, ms: number) {
   let t: number | undefined;
   return (...args: Parameters<T>) => {
