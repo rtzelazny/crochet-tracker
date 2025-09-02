@@ -25,7 +25,7 @@ export function useMyPatterns(session: Session | null) {
         .select(
           "id, owner, title, description, content, created_at, updated_at"
         )
-        .order("updated_at", { ascending: false }); // most recently updated first
+        .order("created_at", { ascending: false }); // most recently updated first
       if (error) throw error;
       return data as any;
     },

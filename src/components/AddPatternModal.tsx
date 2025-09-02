@@ -23,14 +23,14 @@ function AddPatternModal({ onClose }: { onClose: () => void }) {
             value={title}
             placeholder="Pattern name... "
             onChange={(e) => setTitle(e.currentTarget.value)}
-            className="w-70 h-8 rounded-md px-2 text-m border-1 border-gray-900 rounded-md bg-gray-100 dark:bg-gray-700"
+            className="w-70 h-8 rounded-md px-2 text-m border-1 border-gray-300 rounded-md bg-gray-100 dark:bg-gray-700"
           />
 
           <textarea
             value={description}
             onChange={(e) => setDescription(e.currentTarget.value)}
             placeholder="description (optional) "
-            className="w-90 min-h-15 max-h-40 rounded-md px-2 text-m border-1 border-gray-500 rounded-md bg-gray-100 dark:bg-gray-700"
+            className="w-90 min-h-15 max-h-40 rounded-md px-2 text-m border-1 border-gray-300 rounded-md bg-gray-100 dark:bg-gray-700"
           />
         </div>
 

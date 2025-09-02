@@ -66,12 +66,12 @@ function PatternEditor({
       <div className="mx-10 bg-gray-100 h-dvh rounded-lg">
         {rows.map((row, i) => {
           const isSection = row.type === "section";
-          const marginTop = isSection && i !== 0 ? "mt-10" : ""; // more space if not first row
+          const paddingTop = isSection ? (i === 0 ? "pt-2" : "pt-10") : ""; // more space if not first row
 
           switch (row.type) {
             case "stitch":
               return (
-                <div key={row.id} className={marginTop}>
+                <div key={row.id} className={paddingTop}>
                   <StitchRow
                     key={row.id}
                     row={row}
@@ -82,7 +82,7 @@ function PatternEditor({
               );
             case "section":
               return (
-                <div key={row.id} className={marginTop}>
+                <div key={row.id} className={paddingTop}>
                   <SectionRow
                     key={row.id}
                     row={row}
@@ -93,7 +93,7 @@ function PatternEditor({
               );
             case "note":
               return (
-                <div key={row.id} className={marginTop}>
+                <div key={row.id} className={paddingTop}>
                   <NoteRow
                     key={row.id}
                     row={row}

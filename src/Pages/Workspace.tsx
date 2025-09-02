@@ -103,7 +103,7 @@ function Workspace() {
                 </div>
                 {/* Pattern description if there is one */}
                 {!!pattern?.description && (
-                  <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-300 line-clamp-2 break-words">
+                  <p className="mt-1 text-sm text-wrap text-zinc-500 dark:text-zinc-300 line-clamp-2 break-words">
                     {pattern.description}
                   </p>
                 )}
@@ -146,6 +146,17 @@ function Workspace() {
             </header>
             {editHeaderOpen && (
               <EditPatternHeaderModal
+                initialTitle={pattern?.title ?? ""}
+                initialDescription={pattern?.description ?? ""}
+                saving={update.isPending}
+                onSave={async ({ title, description }) => {
+                  if (!id) return;
+                  await update.mutateAsync({
+                    id,
+                    patch: { title, description },
+                  });
+                  // UI refreshes
+                }}
                 onClose={() => setEditHeaderOpen(false)}
               />
             )}
