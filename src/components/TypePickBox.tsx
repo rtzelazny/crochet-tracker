@@ -11,10 +11,10 @@ type SelectProps = {
   clearLabel?: string;
 
   // sizing/styling overrides
-  wrapperClassName?: string;   // size of box
-  inputClassName?: string;     // height/padding/font of input
-  listClassName?: string;      // dropdown width/height
-  optionClassName?: string;    // option row padding/height
+  wrapperClassName?: string; // size of box
+  inputClassName?: string; // height/padding/font of input
+  listClassName?: string; // dropdown width/height
+  optionClassName?: string; // option row padding/height
   dropdownWidth?: number | string; // inline width (e.g. 320 or "20rem")
   maxListHeight?: number | string; // inline max-height (e.g. 240 or "16rem")
 };
@@ -47,7 +47,8 @@ function TypePickBox({
     lastValidRef.current = "";
     setQuery("");
     setOpen(false);
-    inputRef.current?.focus(); };
+    inputRef.current?.focus();
+  };
 
   useEffect(() => {
     setQuery(value);
@@ -65,18 +66,6 @@ function TypePickBox({
     setOpen(true);
     setActiveIndex(0);
   };
-
-  useEffect(() => {
-    const onDocClick = (e: MouseEvent) => {
-      if (!wrapRef.current) return;
-      if (!wrapRef.current.contains(e.target as Node)) {
-        commitOrRevert();
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", onDocClick);
-    return () => document.removeEventListener("mousedown", onDocClick);
-  }, []);
 
   const handleBlur = () => {
     setTimeout(() => {
@@ -110,7 +99,9 @@ function TypePickBox({
     switch (e.key) {
       case "ArrowDown":
         e.preventDefault();
-        setActiveIndex((i) => Math.min(i + 1, Math.max(0, filtered.length - 1)));
+        setActiveIndex((i) =>
+          Math.min(i + 1, Math.max(0, filtered.length - 1))
+        );
         break;
       case "ArrowUp":
         e.preventDefault();
@@ -180,26 +171,28 @@ function TypePickBox({
           id="ac-listbox"
           role="listbox"
           className={`absolute z-50 mt-1 w-full max-h-60 overflow-auto overscroll-contain rounded-md border border-zinc-200 bg-white p-1 text-sm shadow-lg
-                      dark:border-zinc-700 dark:bg-zinc-900 ${listClassName ?? "max-h-60"}`}
+                      dark:border-zinc-700 dark:bg-zinc-900 ${
+                        listClassName ?? "max-h-60"
+                      }`}
           style={{
             width: dropdownWidth ?? undefined,
             maxHeight: maxListHeight ?? undefined,
           }}
         >
-            {/* Clear option */}
-      {showClearOption && (
-        <li
-          role="option"
-          aria-selected={false}
-          tabIndex={-1}
-          onMouseDown={(e) => e.preventDefault()}
-          onClick={clear}
-          onMouseEnter={() => setActiveIndex(-1)}
-          className="mb-1 cursor-pointer select-none rounded px-2 py-1 text-zinc-400 bg-zinc-100 hover:bg-zinc-300 dark:text-zinc-200 dark:hover:bg-zinc-800"
-        >
-          {clearLabel}
-        </li>
-      )}
+          {/* Clear option */}
+          {showClearOption && (
+            <li
+              role="option"
+              aria-selected={false}
+              tabIndex={-1}
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={clear}
+              onMouseEnter={() => setActiveIndex(-1)}
+              className="mb-1 cursor-pointer select-none rounded px-2 py-1 text-zinc-400 bg-zinc-100 hover:bg-zinc-300 dark:text-zinc-200 dark:hover:bg-zinc-800"
+            >
+              {clearLabel}
+            </li>
+          )}
           {filtered.length === 0 ? (
             <li className="cursor-default select-none px-2 py-2 text-zinc-500 dark:text-zinc-400">
               No matches
@@ -218,7 +211,11 @@ function TypePickBox({
                   onClick={() => select(opt)}
                   onMouseEnter={() => setActiveIndex(i)}
                   className={`cursor-pointer select-none rounded px-2 py-1
-                              ${activeIndex === i ? "bg-zinc-200 dark:bg-zinc-700" : "hover:bg-zinc-100 dark:hover:bg-zinc-800"}
+                              ${
+                                activeIndex === i
+                                  ? "bg-zinc-200 dark:bg-zinc-700"
+                                  : "hover:bg-zinc-100 dark:hover:bg-zinc-800"
+                              }
                               ${optionClassName ?? ""}`}
                 >
                   {opt}
