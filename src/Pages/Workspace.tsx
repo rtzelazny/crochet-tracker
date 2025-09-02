@@ -27,7 +27,6 @@ function Workspace() {
   const { data: pattern, isLoading } = usePattern(id);
   const update = useUpdatePattern();
 
-  /* ===== NEW: local draft is the source of truth while editing ===== */
   const [draft, setDraft] = useState<PatternContent>({ version: 1, rows: [] });
 
   // Reinitialize draft ONLY when switching to a different pattern id
@@ -36,15 +35,28 @@ function Workspace() {
     setDraft(pattern.content ?? { version: 1, rows: [] });
   }, [pattern?.id]);
 
+  // mode reset to view on pattern change
+  useEffect(() => {
+    setMode("view");
+  }, [id]);
+
   // Debounced saver for editor
   const saveContent = useMemo(
-  () =>
-    debounce((next: PatternContent) => {
-      if (!id) return;
-      update.mutate({ id, patch: { content: next } });
-    }, 500),
-  [id, update]
-);
+    () =>
+      debounce((next: PatternContent) => {
+        if (!id) return;
+        update.mutate({ id, patch: { content: next } });
+      }, 500),
+    [id, update]
+  );
+
+  const handleModeSwitch = (newMode: Mode) => {
+    setMode(newMode);
+    // If switching to edit mode, ensure draft is current
+    if (newMode === "edit" && pattern?.content) {
+      setDraft(pattern.content);
+    }
+  };
 
   return (
     <div className="h-dvh overflow-hidden bg-white dark:bg-gray-800 dark:text-white">
@@ -88,7 +100,7 @@ function Workspace() {
                 <button
                   role="tab"
                   aria-selected={mode === "view"}
-                  onClick={() => setMode("view")}
+                  onClick={() => handleModeSwitch("view")}
                   className={`w-10 h-5.5 rounded-bl-md rounded-tl-md ${
                     mode === "view"
                       ? "bg-gray-200 dark:bg-gray-600 font-semibold"
@@ -100,7 +112,7 @@ function Workspace() {
                 <button
                   role="tab"
                   aria-selected={mode === "edit"}
-                  onClick={() => setMode("edit")}
+                  onClick={() => handleModeSwitch("edit")}
                   className={`w-10 h-5.5 rounded-br-md rounded-tr-md ${
                     mode === "edit"
                       ? "bg-gray-200 dark:bg-gray-600 font-semibold"

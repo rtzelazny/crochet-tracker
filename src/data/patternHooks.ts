@@ -16,6 +16,7 @@ export type PatternRow = {
 /* return all user's patterns */
 export function useMyPatterns(session: Session | null) {
   return useQuery({
+    // cache the patterns for the specific user
     queryKey: ["patterns", session?.user?.id],
     enabled: !!session?.user?.id,
     queryFn: async (): Promise<PatternRow[]> => {
@@ -24,14 +25,14 @@ export function useMyPatterns(session: Session | null) {
         .select(
           "id, owner, title, description, content, created_at, updated_at"
         )
-        .order("updated_at", { ascending: false });
+        .order("updated_at", { ascending: false }); // most recently updated first
       if (error) throw error;
       return data as any;
     },
   });
 }
 
-/* return specific pattern row */
+/* return a pattern by it's id */
 export function usePattern(id: string | undefined) {
   return useQuery({
     queryKey: ["pattern", id],
@@ -43,19 +44,28 @@ export function usePattern(id: string | undefined) {
           "id, owner, title, description, content, created_at, updated_at"
         )
         .eq("id", id!)
-        .single();
+        .single(); // returns the one row corresponding to the id
       if (error) throw error;
       return data as any;
     },
   });
 }
 
-/* insert new row in the patterns table */
+/* MUTATIONS, use .mutate when referencing */
+/* remember to invalidate so UI is synced */
+
+/* insert new row in the patterns table with defaults */
 export function useCreatePattern() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (init?: Partial<PatternRow>) => {
+      // get the user id from the session
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) throw new Error("Not signed in");
       const payload = {
+        owner: user.id,
         title: init?.title ?? "(Untitled)",
         description: init?.description ?? null,
         content: init?.content ?? { version: 1, rows: [] },
@@ -72,7 +82,7 @@ export function useCreatePattern() {
   });
 }
 
-/* Save pattern */
+/* patches the title, description, or content if changed */
 export function useUpdatePattern() {
   const qc = useQueryClient();
   return useMutation({
@@ -84,7 +94,7 @@ export function useUpdatePattern() {
       const { error } = await supabase
         .from("patterns")
         .update({ ...patch, updated_at: new Date().toISOString() })
-        .eq("id", id);
+        .eq("id", id); // new updated_at timestamp as well
       if (error) throw error;
     },
     onSuccess: (_, vars) => {
