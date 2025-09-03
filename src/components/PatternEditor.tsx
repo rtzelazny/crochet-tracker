@@ -4,17 +4,35 @@ import SectionRow from "./SectionRow";
 import NoteRow from "./NoteRow";
 import InsertButtonsBar from "./InsertButtonsBar";
 import SelectButtonsBar from "./SelectButtonsBar";
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 
-import type { PatternRow } from "../types/patternRows";
+import type { PatternContent, PatternRow } from "../types/patternContent";
 
-function PatternEditor() {
+function PatternEditor({
+  content,
+  onChange,
+  onTitleChange,
+  onDescriptionChange,
+}: {
+  content: PatternContent;
+  onChange: (next: PatternContent) => void;
+  onTitleChange?: (title: string) => void;
+  onDescriptionChange?: (desc: string) => void;
+}) {
   // list for rows
-  const [rows, setRows] = useState<PatternRow[]>([]);
+  const rows = content.rows ?? [];
+
+  const commit = (nextRows: PatternRow[]) => {
+    console.log("[commit] from", content, "to", {
+      version: (content.version ?? 0) + 1,
+      rows: nextRows,
+    });
+    onChange({ version: (content.version ?? 0) + 1, rows: nextRows });
+  };
 
   const addStitch = () =>
-    setRows((prev) => [
-      ...prev,
+    commit([
+      ...rows,
       {
         id: crypto.randomUUID(),
         type: "stitch",
@@ -25,26 +43,19 @@ function PatternEditor() {
     ]);
 
   const addSection = () =>
-    setRows((prev) => [
-      ...prev,
-      { id: crypto.randomUUID(), type: "section", title: "", repeat: "" },
-    ]);
+    commit([...rows, { id: crypto.randomUUID(), type: "section", title: "" }]);
 
   const addNote = () =>
-    setRows((prev) => [
-      ...prev,
-      { id: crypto.randomUUID(), type: "note", text: "" },
-    ]);
+    commit([...rows, { id: crypto.randomUUID(), type: "note", text: "" }]);
 
-  const removeRow = (id: string) =>
-    setRows((prev) => prev.filter((r) => r.id !== id));
+  const removeRow = (id: string) => commit(rows.filter((r) => r.id !== id));
 
   const updateRow = (id: string, next: PatternRow) =>
-    setRows((prev) => prev.map((r) => (r.id === id ? next : r)));
+    commit(rows.map((r) => (r.id === id ? next : r)));
 
   return (
     <div className="h-dvh overflow-y-auto">
-      <div className="sticky top-0 flex inline-flex gap-5 rounded-lg bg-gray-200 w-full p-5 z-8">
+      <div className="sticky top-0 flex inline-flex gap-5 rounded-lg bg-gray-200 w-full p-5 z-10">
         <InsertButtonsBar
           onAddStitch={addStitch}
           onAddSection={addSection}
@@ -55,35 +66,38 @@ function PatternEditor() {
       <div className="mx-10 bg-gray-100 h-dvh rounded-lg">
         {rows.map((row, i) => {
           const isSection = row.type === "section";
-          const marginTop = isSection && i !== 0 ? "mt-10" : ""; // more space if not first row
+          const paddingTop = isSection ? (i === 0 ? "pt-2" : "pt-10") : ""; // more space if not first row
 
           switch (row.type) {
             case "stitch":
               return (
-                <div key={row.id} className={marginTop}>
+                <div key={row.id} className={paddingTop}>
                   <StitchRow
+                    key={row.id}
                     row={row}
-                    onChange={(next) => updateRow(row.id, next)}
+                    onChange={(n) => updateRow(row.id, n)}
                     onRemove={() => removeRow(row.id)}
                   />
                 </div>
               );
             case "section":
               return (
-                <div key={row.id} className={marginTop}>
+                <div key={row.id} className={paddingTop}>
                   <SectionRow
+                    key={row.id}
                     row={row}
-                    onChange={(next) => updateRow(row.id, next)}
+                    onChange={(n) => updateRow(row.id, n)}
                     onRemove={() => removeRow(row.id)}
                   />
                 </div>
               );
             case "note":
               return (
-                <div key={row.id} className={marginTop}>
+                <div key={row.id} className={paddingTop}>
                   <NoteRow
+                    key={row.id}
                     row={row}
-                    onChange={(next) => updateRow(row.id, next)}
+                    onChange={(n) => updateRow(row.id, n)}
                     onRemove={() => removeRow(row.id)}
                   />
                 </div>

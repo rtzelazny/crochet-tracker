@@ -1,7 +1,7 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 
 type NumericInputProps = {
-  value: string; // allow for temporary empty string
+  value: string | number | undefined; // allow for temporary empty string
   onChange: (next: string) => void;
   min?: number;
   max?: number;
@@ -17,6 +17,7 @@ function NumericTextbox({
   placeholder = "0",
   className,
 }: NumericInputProps) {
+  const display = useMemo(() => (value === undefined || value === null ? "" : String(value)), [value]);
   // allow only digits while typing
   const handleChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -60,21 +61,24 @@ function NumericTextbox({
   const handleBlur = useCallback(() => {
     if (value === "") return;
     let n = Number(value);
-    if (Number.isFinite(min!)) n = Math.max(n, Number(min));
-    if (Number.isFinite(max!)) n = Math.min(n, Number(max));
+    if (typeof min === "number") n = Math.max(n, min);
+    if (typeof max === "number") n = Math.min(n, max);
     onChange(String(n));
-  }, [value, min, max, onChange]);
+  }, [display, min, max, onChange]);
 
   return (
     <input
       type="text"
       inputMode="numeric" // mobile keypad
       pattern="[0-9]*" // reg expression for nums
-      value={value}
+      value={display}
       onChange={handleChange}
       onKeyDown={handleKeyDown}
       onPaste={handlePaste}
-      onBlur={handleBlur}
+      onBlur={(e) => { 
+    console.log('[blur]', e.target.value);
+    handleBlur();
+  }}
       placeholder={placeholder}
       className={className}
     />
