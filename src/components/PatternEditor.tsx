@@ -64,7 +64,7 @@ function PatternEditor({
         />
         <SelectButtonsBar />
       </div>
-      <div className="mx-10 bg-gray-100 h-dvh overflow-y-auto rounded-lg">
+      <div className="mx-10 bg-gray-100 rounded-lg pb-100">
         {rows.map((row, i) => {
           const isSection = row.type === "section";
           const paddingTop = isSection ? (i === 0 ? "pt-2" : "pt-10") : ""; // more space if not first row
