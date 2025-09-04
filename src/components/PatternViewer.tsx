@@ -1,10 +1,12 @@
 import type { PatternContent, PatternRow } from "../types/patternContent";
+import StitchTracker from "./StitchTracker";
 
 function PatternViewer({ content }: { content: PatternContent }) {
   const rows = content.rows;
   return (
     <div className="p-10">
       <article className="prose dark:prose-invert max-w-none">
+        <StitchTracker />
         {rows.map((r) => {
           if (r.type === "section") {
             return <h3 key={r.id}>{r.title || "Section"}</h3>;

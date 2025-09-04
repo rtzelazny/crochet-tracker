@@ -192,9 +192,9 @@ function Workspace() {
         </div>
 
         {/* Stitch Tracker column */}
-        {mode === "view" && (
+        {/* {mode === "view" && (
           <StitchTrackerPanel width={trackerWidth} setWidth={setTrackerWidth} />
-        )}
+        )} */}
       </div>
 
       {/* top bar */}
