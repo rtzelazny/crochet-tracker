@@ -14,7 +14,7 @@ export default function ThemeToggle() {
     <div
       role="tablist"
       aria-label="Theme"
-      className="inline-flex rounded-lg border border-zinc-300 bg-white p-1 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+      className="inline-flex z-40 rounded-lg border border-zinc-300 bg-white p-1 text-sm dark:border-zinc-700 dark:bg-zinc-900"
     >
       {tabs.map((t) => {
         const active = theme === t.key;

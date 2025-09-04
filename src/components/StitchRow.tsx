@@ -1,6 +1,6 @@
 import NumericTextbox from "./NumericTextbox";
 import TypePickBox from "./TypePickBox";
-import { PLACEMENTS, STITCHES } from "../constants";
+import { PLACEMENTS1, PLACEMENTS2, STITCHES } from "../constants";
 import type { StitchRow as StitchRowType } from "../types/patternContent";
 import { useEffect } from "react";
 
@@ -34,9 +34,17 @@ function AddStitch({ row, onChange, onRemove }: Props) {
         />
         <span className="text-sm text-zinc-600 dark:text-zinc-300">in</span>
         <TypePickBox
-          options={PLACEMENTS}
-          value={row.placement}
-          onChange={(v) => onChange({ ...row, placement: v })}
+          options={PLACEMENTS1}
+          value={row.placement1}
+          onChange={(v) => onChange({ ...row, placement1: v })}
+          placeholder="Placement…"
+          wrapperClassName="w-40"
+          inputClassName="h-6 border border-zinc-300"
+        />
+        <TypePickBox
+          options={PLACEMENTS2}
+          value={row.placement2}
+          onChange={(v) => onChange({ ...row, placement2: v })}
           placeholder="Placement…"
           wrapperClassName="w-40"
           inputClassName="h-6 border border-zinc-300"

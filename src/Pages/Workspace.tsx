@@ -73,7 +73,7 @@ function Workspace() {
         }}
       >
         {/* Sidebar column */}
-        <aside className="h-dvh overflow-y-auto">
+        <aside className="h-dvh overflow-visible">
           <SideBar />
         </aside>
 

@@ -21,32 +21,33 @@ export const STITCHES = [
   "bobble st",
 ];
 
-// supported stitch placements
-export const PLACEMENTS = [
+export const PLACEMENTS1 = [
   "none",
-  "custom",
-  // Basic stitch targets
+  "each",
+  "next",
+  "second",
+  "{n}",
+  "beginning",
+  "beginning row",
+];
+
+// supported stitch placements
+export const PLACEMENTS2 = [
+  "none",
   "next st",
-  "same st",
-  "each st",
-  "beginning st",
-  "beginning row st",
-  "{n} st from hook",
-  "{n} st from first stitch",
+  "st",
+  "st from hook",
+  "st from first stitch",
 
   // Loops
   "both loops",
   "blo", // back loop only
   "flo", // front loop only
-  "3rd loop",
 
   // Chain targets
-  "next ch",
-  "each ch",
+  "ch",
   "back bump of ch",
-  "ch-1 sp",
-  "ch-2 sp",
-  "{n}-ch sp", // any chain space size
+  "ch sp",
 
   // Spaces / rings / corners
   "same sp",

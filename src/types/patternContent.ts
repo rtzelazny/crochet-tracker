@@ -5,7 +5,8 @@ export type StitchRow = {
   type: "stitch";
   qty: string; // keep as string while editing
   stitch: string; // must be one of STITCHES or ""
-  placement: string; // must be one of PLACEMENTS or ""
+  placement1: string; // must be one of PLACEMENTS or ""
+  placement2: string; // must be one of PLACEMENTS2 or ""
 };
 
 export type SectionRow = {
