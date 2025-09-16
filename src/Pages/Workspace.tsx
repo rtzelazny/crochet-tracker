@@ -3,7 +3,7 @@ import { supabase } from "../lib/supabase";
 import ThemeToggle from "../components/ThemeToggle";
 import SideBar from "../components/SideBar";
 import { useMemo, useState, useEffect } from "react";
-import StitchTrackerPanel from "../components/StitchTrackerPanel";
+// import StitchTrackerPanel from "../components/StitchTrackerPanel";
 import PatternViewer from "../components/PatternViewer";
 import PatternEditor from "../components/PatternEditor";
 import { SIDEBAR_WIDTH } from "../constants";
@@ -11,6 +11,13 @@ import { useParams } from "react-router-dom";
 import { usePattern, useUpdatePattern } from "../data/patternHooks";
 import type { PatternContent } from "../types/patternContent";
 import EditPatternHeaderModal from "../components/EditPatternHeaderModal";
+import StitchTracker from "../components/StitchTracker";
+import RowToStitchConverter from "../types/RowToStitchConverter";
+import {
+  usePatternProgress,
+  useUpsertPatternProgress,
+} from "../data/patternHooks";
+import { resolveProgressIndex } from "../types/RowToStitchConverter";
 
 type Mode = "view" | "edit";
 
@@ -31,6 +38,42 @@ function Workspace() {
   const [draft, setDraft] = useState<PatternContent>({ version: 1, rows: [] });
 
   const [editHeaderOpen, setEditHeaderOpen] = useState(false);
+
+  const { atoms } = useMemo(() => RowToStitchConverter(draft), [draft]);
+
+  const { data: progress } = usePatternProgress(id); // loads { atom_index, row_id, in_row_index }
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  // When atoms or saved progress changes, derive the starting index
+  useEffect(() => {
+    setActiveIndex(
+      resolveProgressIndex({
+        atoms,
+        saved: {
+          atomIndex: progress?.atom_index,
+          rowId: progress?.row_id,
+          inRowIndex: progress?.in_row_index,
+        },
+      })
+    );
+  }, [atoms, progress]);
+
+  const upsert = useUpsertPatternProgress();
+
+  const setAndSave = (i: number) => {
+    const clamped = Math.max(0, Math.min(i, atoms.length));
+    const at = atoms[Math.min(clamped, atoms.length - 1)];
+    setActiveIndex(clamped);
+    upsert.mutate({
+      patternId: id!,
+      atomIndex: clamped,
+      rowId: at?.rowId ?? null,
+      inRowIndex: at?.inRowIdx ?? null,
+      version: draft.version ?? null,
+    });
+  };
+
+  const handleNext = () => setAndSave(activeIndex + 1);
 
   // Reinitialize draft ONLY when switching to a different pattern id
   useEffect(() => {
@@ -61,15 +104,22 @@ function Workspace() {
     }
   };
 
+  const columns = useMemo(
+  () => (mode === "view"
+    ? `${SIDEBAR_WIDTH}px 1fr ${trackerWidth}px`   // 3 columns (with fixed tracker width)
+    : `${SIDEBAR_WIDTH}px 1fr`),                   // 2 columns (no tracker)
+  [mode, trackerWidth]
+);
+
   return (
     <div className="h-dvh overflow-hidden bg-white dark:bg-gray-800 dark:text-white">
       <h2 className="pt-3 pb-2 pl-3 font-bold"> StitchMate []</h2>
 
       {/* Grid for [sidebar][pattern view/edit][stitch tracker] */}
       <div
-        className="grid"
+        className="grid h-dvh"
         style={{
-          gridTemplateColumns: `${SIDEBAR_WIDTH}px 1fr auto`,
+          gridTemplateColumns: columns
         }}
       >
         {/* Sidebar column */}
@@ -192,9 +242,22 @@ function Workspace() {
         </div>
 
         {/* Stitch Tracker column */}
-        {/* {mode === "view" && (
-          <StitchTrackerPanel width={trackerWidth} setWidth={setTrackerWidth} />
-        )} */}
+        {mode === "view" && (
+    <aside
+      className="h-dvh overflow-hidden rounded-bl-lg pt-15"
+      // optional: let users resize later
+      // style={{ width: trackerWidth }}
+    >
+      <StitchTracker
+        atoms={atoms ?? []}                        // guard just in case
+        currentIdx={activeIndex}
+        onSetActive={setAndSave}
+        onNext={handleNext}
+      />
+    </aside>
+  )}
+
+
       </div>
 
       {/* top bar */}
