@@ -50,9 +50,9 @@ function Workspace() {
       resolveProgressIndex({
         atoms,
         saved: {
-          atomIndex: progress?.atom_index,
+          atomIndex: progress?.stitch_idx,
           rowId: progress?.row_id,
-          inRowIndex: progress?.in_row_index,
+          inRowIndex: progress?.in_row_idx,
         },
       })
     );
@@ -66,14 +66,15 @@ function Workspace() {
     setActiveIndex(clamped);
     upsert.mutate({
       patternId: id!,
-      atomIndex: clamped,
+      stitchIdx: clamped,
       rowId: at?.rowId ?? null,
-      inRowIndex: at?.inRowIdx ?? null,
+      inRowIdx: at?.inRowIdx ?? null,
       version: draft.version ?? null,
     });
   };
 
   const handleNext = () => setAndSave(activeIndex + 1);
+  const handlePrevious = () => setAndSave(activeIndex - 1);
 
   // Reinitialize draft ONLY when switching to a different pattern id
   useEffect(() => {
@@ -105,11 +106,12 @@ function Workspace() {
   };
 
   const columns = useMemo(
-  () => (mode === "view"
-    ? `${SIDEBAR_WIDTH}px 1fr ${trackerWidth}px`   // 3 columns (with fixed tracker width)
-    : `${SIDEBAR_WIDTH}px 1fr`),                   // 2 columns (no tracker)
-  [mode, trackerWidth]
-);
+    () =>
+      mode === "view"
+        ? `${SIDEBAR_WIDTH}px 1fr ${trackerWidth}px` // 3 columns (with fixed tracker width)
+        : `${SIDEBAR_WIDTH}px 1fr`, // 2 columns (no tracker)
+    [mode, trackerWidth]
+  );
 
   return (
     <div className="h-dvh overflow-hidden bg-white dark:bg-gray-800 dark:text-white">
@@ -119,7 +121,7 @@ function Workspace() {
       <div
         className="grid h-dvh"
         style={{
-          gridTemplateColumns: columns
+          gridTemplateColumns: columns,
         }}
       >
         {/* Sidebar column */}
@@ -128,9 +130,9 @@ function Workspace() {
         </aside>
 
         {/* Pattern view/edit column */}
-        <div>
+        <div className="pt-10">
           <section
-            className={`h-dvh min-w-0 dark:border-zinc-800 mt-10 ${
+            className={`h-dvh min-w-0 dark:border-zinc-800 ${
               mode === "view" ? "overflow-y-auto" : "overflow-hidden"
             }`}
           >
@@ -243,21 +245,20 @@ function Workspace() {
 
         {/* Stitch Tracker column */}
         {mode === "view" && (
-    <aside
-      className="h-dvh overflow-hidden rounded-bl-lg pt-15"
-      // optional: let users resize later
-      // style={{ width: trackerWidth }}
-    >
-      <StitchTracker
-        atoms={atoms ?? []}                        // guard just in case
-        currentIdx={activeIndex}
-        onSetActive={setAndSave}
-        onNext={handleNext}
-      />
-    </aside>
-  )}
-
-
+          <aside
+            className="h-dvh overflow-hidden rounded-bl-lg pt-15 pb-15 pr-5 overscroll-none"
+            // optional: let users resize later
+            // style={{ width: trackerWidth }}
+          >
+            <StitchTracker
+              atoms={atoms ?? []} // guard just in case
+              currentIdx={activeIndex}
+              onSetActive={setAndSave}
+              onNext={handleNext}
+              onPrevious={handlePrevious}
+            />
+          </aside>
+        )}
       </div>
 
       {/* top bar */}

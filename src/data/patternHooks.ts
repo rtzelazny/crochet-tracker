@@ -116,43 +116,51 @@ export function useDeletePattern() {
   });
 }
 
+/* Retrieve user's progress on a specific pattern */
 export function usePatternProgress(patternId?: string) {
   return useQuery({
     queryKey: ["progress", patternId],
     enabled: !!patternId,
     queryFn: async () => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error("Not signed in");
       const { data, error } = await supabase
         .from("pattern_progress")
-        .select("atom_index,row_id,in_row_index,version")
+        .select("stitch_idx,row_id,in_row_idx,version")
         .eq("user_id", user.id)
         .eq("pattern_id", patternId!)
         .maybeSingle();
       if (error) throw error;
-      return data ?? { atom_index: 0, row_id: null, in_row_index: 0, version: null };
+      return (
+        data ?? { stitch_idx: 0, row_id: null, in_row_idx: 0, version: null }
+      );
     },
   });
 }
 
+/* Upsert (insert or update) user's progress on a specific pattern */
 export function useUpsertPatternProgress() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: async (args: {
       patternId: string;
-      atomIndex: number;
+      stitchIdx: number;
       rowId?: string | null;
-      inRowIndex?: number | null;
+      inRowIdx?: number | null;
       version?: number | null;
     }) => {
-      const { data: { user } } = await supabase.auth.getUser();
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       if (!user) throw new Error("Not signed in");
       const payload = {
         user_id: user.id,
         pattern_id: args.patternId,
-        atom_index: args.atomIndex,
+        stitch_idx: args.stitchIdx,
         row_id: args.rowId ?? null,
-        in_row_index: args.inRowIndex ?? null,
+        in_row_idx: args.inRowIdx ?? null,
         version: args.version ?? null,
       };
       const { error } = await supabase
@@ -165,4 +173,3 @@ export function useUpsertPatternProgress() {
     },
   });
 }
-
