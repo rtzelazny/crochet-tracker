@@ -5,14 +5,18 @@ function PatternViewer({ content }: { content: PatternContent }) {
   return (
     <div className="p-10">
       <article className="prose dark:prose-invert max-w-none">
-        {rows.map((r) => {
-          if (r.type === "section") {
-            return <h3 key={r.id}>{r.title || "Section"}</h3>;
-          }
+        {rows.map((r, i) => {
+
+          const isSection = r.type === "section";
+          const paddingTop = isSection ? (i === 0 ? "" : "pt-10") : "";
+
+          if (isSection) {
+            return <h3 key={r.id} className={`text-lg font-semibold ${paddingTop}`}>{r.title || "Section"}</h3>;
+          }   
           if (r.type === "note") {
             return (
-              <p key={r.id}>
-                <em>{r.text}</em>
+              <p key={r.id} className="italic text-zinc-600 dark:text-zinc-400 py-2">
+                {r.text}
               </p>
             );
           }
