@@ -1,4 +1,4 @@
-import type { PatternContent, PatternRow } from "../types/patternContent";
+import type { PatternContent } from "../types/patternContent";
 
 function PatternViewer({ content }: { content: PatternContent }) {
   const rows = content.rows;

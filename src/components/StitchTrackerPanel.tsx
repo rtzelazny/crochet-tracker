@@ -1,5 +1,4 @@
 import { useRef, useEffect } from "react";
-import StitchTracker from "./StitchTracker";
 
 export default function StitchTrackerPanel({
   width,
@@ -53,7 +52,7 @@ export default function StitchTrackerPanel({
       />
       <h3 className="font-bold mb-2">Stitch Tracker</h3>
       <div>
-        <StitchTracker/>
+        {/* <StitchTracker/> */}
       </div>
       
     </div>
